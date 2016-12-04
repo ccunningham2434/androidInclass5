@@ -58,7 +58,7 @@ public class CrimeListFragment extends Fragment {
         mCrimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
 
         //Set the layout manger for the recyclerview. It needs to know how to layout
-        //the indiviual views that make up the recyclerView. This linear layout manager
+        //the individual views that make up the recyclerView. This linear layout manager
         //will tell the recyclerView to lay them out in a vertical fashion.
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 

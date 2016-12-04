@@ -25,7 +25,7 @@ public class CrimeLab {
 
     //This is a static get method to get the single instance of the class.
     public static CrimeLab get(Context context) {
-        //If we dont' have an instace, we create a new one.
+        //If we don't have an instance, we create a new one.
         if (sCrimeLab == null) {
             sCrimeLab = new CrimeLab(context);
         }
@@ -73,7 +73,7 @@ public class CrimeLab {
         Scanner scanner = null;
 
         try {
-            //instanciate a new scanner
+            //instantiate a new scanner
             //Use some method chaining to get access to the file.
             //Use the context to get at resources, and once we have the resources
             //call openRawResource passing in the location of the file.
@@ -116,7 +116,7 @@ public class CrimeLab {
             //On exception, just log out the exception to string
             Log.e("Read CSV", e.toString());
         } finally {
-            //Check to make sure that the scanner actually got instanciated
+            //Check to make sure that the scanner actually got instantiated
             //and if so, close it.
             if (scanner != null) {
                 scanner.close();

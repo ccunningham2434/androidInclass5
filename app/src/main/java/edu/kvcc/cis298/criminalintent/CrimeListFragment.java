@@ -1,12 +1,14 @@
 package edu.kvcc.cis298.criminalintent;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,12 +19,16 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
  * Created by dbarnes on 10/19/2016.
  */
 public class CrimeListFragment extends Fragment {
+
+    // >Tag for the logcat.
+    private static final String TAG = "CrimeListFragment";
 
     //String key for saving whether to show the subtitle or not
     private static String SAVED_SUBTITLE_VISIBLE = "subtitle";
@@ -45,6 +51,11 @@ public class CrimeListFragment extends Fragment {
         //onCreateOptionsMenu method, which does the work of
         //inflating the menu and displaying it.
         setHasOptionsMenu(true);
+
+        // >This will make a new instance of teh FetchCrimesTask private inner class. When the execute...
+        // >...method get called on it, the FetchCrimesTask will start the doInBackground method on a...
+        // >...seperate thread automatically for us.
+        new FetchCrimesTask().execute();
     }
 
     @Nullable
@@ -283,5 +294,24 @@ public class CrimeListFragment extends Fragment {
         //of the action bar, which is also called the tool bar.
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
+    }
+
+    // >Make an inner class that extends from AsyncTask. The Generic types that are passed in are to...
+    // >...<Params, Progress, Result>. They are types that can be used by the methods that must be overidden.
+    // >We will have VOID for all of them at the moment.
+    private class FetchCrimesTask extends AsyncTask<Void, Void, Void> {
+        // >This is the method that will be executed on the separate thread.
+        // >Once it complete teh onPostExecute method will be called automatically.
+        @Override
+        protected Void doInBackground(Void... params) {
+            new CrimeFetcher().fetchCrimes();
+            return null;
+        }
+
+        // >Method that will automatically get called when the code in doInBackground gets done executing.
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
     }
 }

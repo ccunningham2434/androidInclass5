@@ -43,7 +43,7 @@ public class CrimeLab {
         mContext = context;
 
         //Load the crime list
-        loadCrimeList();
+        //loadCrimeList();
     }
 
     public void addCrime(Crime c) {
@@ -65,6 +65,10 @@ public class CrimeLab {
         }
         //Didn't find a match, return null.
         return null;
+    }
+
+    public void setCrimes(List<Crime> crimes) {
+        mCrimes = crimes;
     }
 
     private void loadCrimeList() {

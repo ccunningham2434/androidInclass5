@@ -257,13 +257,21 @@ public class CrimeListFragment extends Fragment {
         List<Crime> crimes = crimeLab.getCrimes();
 
         if (mAdapter == null) {
-            //Create a new CrimeAdapter and send the crimes we just got
-            //over to it. This way the adapter will have the list of crimes
-            //it can use to make new viewholders and bind data to the viewholder
-            mAdapter = new CrimeAdapter(crimes);
+            // >*Note: the following was used before we switched to getting our data from a networked service.
+            // >    We are now going to call a separate method to do this work that can add a few extra checks...
+            // >    ...about whether the adapter should be setup at this time.
 
-            //Set the adapter on the recyclerview.
-            mCrimeRecyclerView.setAdapter(mAdapter);
+//            //Create a new CrimeAdapter and send the crimes we just got
+//            //over to it. This way the adapter will have the list of crimes
+//            //it can use to make new viewholders and bind data to the viewholder
+//            mAdapter = new CrimeAdapter(crimes);
+//
+//            //Set the adapter on the recyclerview.
+//            mCrimeRecyclerView.setAdapter(mAdapter);
+
+            // >Here is where we will do new work.
+            // >Call teh new setupAdapter method that does the work that the above 2 statements previoulsy did.
+            setupAdaptor();
         } else {
             //Notify the adapter that data may have changed and that
             //it should reload the data using the existing adapter.
@@ -271,6 +279,20 @@ public class CrimeListFragment extends Fragment {
         }
 
         updateSubtitle();
+    }
+
+    // >Check if the data has been loaded from the network source. If so, it will...
+    // >...create a new adaptor for the recycler view, and then add the adapter to the view.
+    private void setupAdaptor() {
+        // >Check to see if the recycler view has been added to the fragment.
+        if (isAdded()) {
+            // >Get a reference to the CrimeLab.
+            CrimeLab lab = CrimeLab.get(getActivity());
+            // >Create a new adaptor sending in the crimes list.
+            mAdapter = new CrimeAdapter(lab.getCrimes());
+            // >Set the adaptor on the recycler view.
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        }
     }
 
     private void updateSubtitle() {
@@ -299,19 +321,27 @@ public class CrimeListFragment extends Fragment {
     // >Make an inner class that extends from AsyncTask. The Generic types that are passed in are to...
     // >...<Params, Progress, Result>. They are types that can be used by the methods that must be overidden.
     // >We will have VOID for all of them at the moment.
-    private class FetchCrimesTask extends AsyncTask<Void, Void, Void> {
+    private class FetchCrimesTask extends AsyncTask<Void, Void, List<Crime>> {
         // >This is the method that will be executed on the separate thread.
         // >Once it complete teh onPostExecute method will be called automatically.
         @Override
-        protected Void doInBackground(Void... params) {
-            new CrimeFetcher().fetchCrimes();
-            return null;
+        protected List<Crime> doInBackground(Void... params) {
+            return new CrimeFetcher().fetchCrimes();
+            //return null;
         }
 
         // >Method that will automatically get called when the code in doInBackground gets done executing.
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(List<Crime> crimes) {
+            //super.onPostExecute(crimes);
+            // >Get a reference to the crime lab.
+            CrimeLab lab = CrimeLab.get(getActivity());
+            // >Use the setter setCrimes to set the crimes to the passed in crimes.
+            lab.setCrimes(crimes);
+            // >Now that we KNOW that we have a data source, we can setup the adapter for the recycler view.
+            setupAdaptor();
         }
     }
+
+
 }
